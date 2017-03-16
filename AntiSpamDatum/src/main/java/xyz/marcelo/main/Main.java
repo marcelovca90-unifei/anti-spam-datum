@@ -8,7 +8,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
-import org.apache.commons.math3.util.Pair;
 import org.apache.log4j.BasicConfigurator;
 
 import com.datumbox.framework.common.Configuration;
@@ -25,9 +24,7 @@ import xyz.marcelo.helper.PrimeHelper;
 public class Main
 {
     private static String baseFolderPath;
-    private static int numberOfFeatures;
     private static int numberOfRepetitions;
-    private static boolean includeEmptyInstances;
     private static String[] metrics;
     private static String key;
     private static long start, end;
@@ -36,9 +33,9 @@ public class Main
     public static void main(String[] args) throws Exception
     {
         // exits if the wrong number of arguments was provided
-        if (args.length != 3)
+        if (args.length != 2)
         {
-            System.out.println("Usage: java -jar AntiSpamDatum.jar \"DATA_SET_FOLDER\" NUMBER_OF_REPETITIONS TEST_EMPTY_INSTANCES");
+            System.out.println("Usage: java -jar AntiSpamDatum.jar \"DATA_SET_FOLDER\" NUMBER_OF_REPETITIONS");
             System.exit(1);
         }
         else
@@ -48,7 +45,6 @@ public class Main
             {
                 baseFolderPath = args[0];
                 numberOfRepetitions = Integer.parseInt(args[1]);
-                includeEmptyInstances = Boolean.parseBoolean(args[2]);
                 metrics = new String[] { "accuracy", "ham_precision", "spam_precision", "ham_recall", "spam_recall", "training_time", "testing_time" };
             }
             catch (Exception e)
@@ -71,35 +67,13 @@ public class Main
         // initialize default configuration based on properties file
         Configuration configuration = Configuration.getConfiguration();
 
-        // objects that will hold all kinds of data sets
-        Dataframe dataframe = null, emptySet = null, trainingDataframe = null, testingDataframe = null;
-
         for (AbstractClassifier<?, ?> classifier : MethodHelper.getAll(configuration))
         {
             for (String folder : DataSetHelper.getFolders(baseFolderPath))
             {
-                // Convert the raw data set to csv format
-                String hamFilePath = folder + File.separator + "ham";
-                String spamFilePath = folder + File.separator + "spam";
-                String dataCsvPath = folder + File.separator + "data.csv";
-                InputOutputHelper.bin2csv(hamFilePath, spamFilePath, dataCsvPath);
-
-                // Read the number of features and convert csv into internal data structure
-                String[] parts = folder.split("\\" + File.separator);
-                numberOfFeatures = Integer.parseInt(parts[parts.length - 1]);
-                dataframe = InputOutputHelper.csv2dataframe(dataCsvPath, numberOfFeatures);
-
                 // Initialize statistics HashMap
                 Map<String, DescriptiveStatistics> stats = new LinkedHashMap<>();
                 Arrays.asList(metrics).forEach(m -> stats.put(m, new DescriptiveStatistics()));
-
-                // Build empty patterns set
-                if (includeEmptyInstances)
-                {
-                    String emptyCsvPath = folder + File.separator + "empty.csv";
-                    InputOutputHelper.buildEmptyCsv(folder, numberOfFeatures);
-                    emptySet = InputOutputHelper.csv2dataframe(emptyCsvPath, numberOfFeatures);
-                }
 
                 for (int rep = 1; rep <= numberOfRepetitions; rep++)
                 {
@@ -107,12 +81,8 @@ public class Main
                     RandomGenerator.setGlobalSeed((long) PrimeHelper.getNextPrime());
 
                     // Separate the training and testing data sets
-                    Pair<Dataframe, Dataframe> pair = InputOutputHelper.dataframe2trainingAndTestingSets(dataframe);
-                    trainingDataframe = pair.getFirst();
-                    testingDataframe = pair.getSecond();
-
-                    // Add empty patterns to testing data set
-                    if (includeEmptyInstances) testingDataframe.addAll(emptySet);
+                    Dataframe trainingDataframe = InputOutputHelper.csv2dataframe(folder + File.separator + "train.csv");
+                    Dataframe testingDataframe = InputOutputHelper.csv2dataframe(folder + File.separator + "test.csv");
 
                     // Fit the classifier
                     start = System.currentTimeMillis();

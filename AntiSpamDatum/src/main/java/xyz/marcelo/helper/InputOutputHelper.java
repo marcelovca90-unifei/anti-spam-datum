@@ -87,6 +87,27 @@ public class InputOutputHelper
         bufferedWriter.close();
     }
 
+    public static Dataframe csv2dataframe(String inputFilename) throws IOException
+    {
+        Dataframe data = null;
+
+        BufferedReader headerReader = new BufferedReader(new InputStreamReader(new FileInputStream(inputFilename)));
+        String[] featureNames = headerReader.readLine().split("\\,");
+        headerReader.close();
+
+        Reader fileReader = new BufferedReader(new InputStreamReader(new FileInputStream(inputFilename)));
+
+        LinkedHashMap<String, TypeInference.DataType> headerDataTypes = new LinkedHashMap<>();
+
+        for (String fn : featureNames)
+            headerDataTypes.put(fn, fn.startsWith("x") ? TypeInference.DataType.NUMERICAL : TypeInference.DataType.CATEGORICAL);
+
+        data = Dataframe.Builder.parseCSVFile(fileReader, "class", headerDataTypes, ',', '"', System.lineSeparator(), null, null,
+                Configuration.getConfiguration());
+
+        return data;
+    }
+
     public static Dataframe csv2dataframe(String inputFilename, int numberOfFeatures) throws IOException
     {
         Dataframe data = null;
