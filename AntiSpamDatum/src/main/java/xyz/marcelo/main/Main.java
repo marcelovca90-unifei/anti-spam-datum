@@ -73,7 +73,7 @@ public class Main
             {
                 // Initialize statistics HashMap
                 Map<String, DescriptiveStatistics> stats = new LinkedHashMap<>();
-                Arrays.asList(metrics).forEach(m -> stats.put(m, new DescriptiveStatistics()));
+                Arrays.stream(metrics).forEach(m -> stats.put(m, new DescriptiveStatistics()));
 
                 for (int rep = 1; rep <= numberOfRepetitions; rep++)
                 {
