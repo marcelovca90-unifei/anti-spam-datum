@@ -1,4 +1,4 @@
-package xyz.marcelo.main;
+package io.github.marcelovca90.main;
 
 import java.io.File;
 import java.io.IOException;
@@ -17,10 +17,10 @@ import com.datumbox.framework.core.common.dataobjects.Dataframe;
 import com.datumbox.framework.core.machinelearning.common.abstracts.modelers.AbstractClassifier;
 import com.datumbox.framework.core.machinelearning.modelselection.metrics.ClassificationMetrics;
 
-import xyz.marcelo.helper.DataSetHelper;
-import xyz.marcelo.helper.InputOutputHelper;
-import xyz.marcelo.helper.MethodHelper;
-import xyz.marcelo.helper.PrimeHelper;
+import io.github.marcelovca90.helper.DataSetHelper;
+import io.github.marcelovca90.helper.InputOutputHelper;
+import io.github.marcelovca90.helper.MethodHelper;
+import io.github.marcelovca90.helper.PrimeHelper;
 
 public class Main
 {

@@ -1,6 +1,6 @@
-package xyz.marcelo.helper;
+package io.github.marcelovca90.helper;
 
-import static xyz.marcelo.helper.DataSetHelper.SEPARATOR;
+import static io.github.marcelovca90.helper.DataSetHelper.SEPARATOR;
 
 import java.util.HashMap;
 import java.util.Map;

@@ -31,7 +31,7 @@
                     <archive>
                         <manifest>
                             <addClasspath>true</addClasspath>
-                            <mainClass>xyz.marcelo.main.Main</mainClass>
+                            <mainClass>io.github.marcelovca90.main.Main</mainClass>
                         </manifest>
                     </archive>
                     <descriptorRefs>
